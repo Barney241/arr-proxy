@@ -1,0 +1,22 @@
+# Sonarr configuration
+# Set SONARR_URL environment variable to enable this service
+# Example: SONARR_URL=http://sonarr:8989
+url: ""
+
+# API key for Sonarr - set via SONARR_API_KEY environment variable
+api_key: ""
+
+# Whitelisted API endpoints (regex patterns)
+# Only these endpoints will be proxied, all others return 403
+whitelist:
+  # Core endpoints
+  - '^/api/v3/series(?:/.*)?$'
+  - '^/api/v3/episode(?:/.*)?$'
+  - '^/api/v3/queue(?:/.*)?$'
+  - '^/api/v3/system/status$'
+  - '^/api/v3/tag(?:/.*)?$'
+  # Common read-only endpoints
+  - '^/api/v3/calendar(?:/.*)?$'
+  - '^/api/v3/wanted(?:/.*)?$'
+  - '^/api/v3/history(?:/.*)?$'
+  - '^/api/v3/parse(?:/.*)?$'

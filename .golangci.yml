@@ -1,0 +1,44 @@
+version: "2"
+run:
+  go: "1.25.5"
+  modules-download-mode: readonly
+  issues-exit-code: 1
+  tests: false
+  allow-parallel-runners: false
+linters:
+  disable-all: true
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - durationcheck
+    - ineffassign
+    - reassign
+    - staticcheck
+    - unused
+    - unconvert
+    - predeclared
+    - misspell
+    - gosec
+    - govet
+    - testableexamples
+    - errcheck
+    - errorlint
+    - exhaustive
+    - prealloc
+    - wastedassign
+  settings:
+    staticcheck:
+      checks:
+        - all
+    errcheck:
+      check-type-assertions: true
+    exhaustive:
+      check:
+        - switch
+        - map
+      default-signifies-exhaustive: true
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

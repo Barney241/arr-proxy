@@ -1,0 +1,60 @@
+services:
+  proxy:
+    image: barney241/arr-proxy:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_PORT=8080
+
+      # API Key auth (default mode)
+      # Clients authenticate via X-Api-Key header or ?apikey= query param
+      - APP_API_KEY=my-secure-proxy-key
+
+      # Configure the services you use (one or both)
+      - RADARR_URL=http://radarr:7878
+      - RADARR_API_KEY=${RADARR_API_KEY}
+      - SONARR_URL=http://sonarr:8989
+      - SONARR_API_KEY=${SONARR_API_KEY}
+
+      # Optional: Enable HTTPS (uncomment and mount certs volume)
+      # - APP_TLS_CERT=/certs/server.crt
+      # - APP_TLS_KEY=/certs/server.key
+      # - APP_CA_CERT=/certs/ca.crt
+
+      # Optional: Use mTLS or Basic auth instead of API key
+      # - APP_AUTH_MODE=mtls
+      # - APP_AUTH_MODE=basic
+      # - APP_BASIC_AUTH_USER=admin
+      # - APP_BASIC_AUTH_PASS=secret
+    # volumes:
+      # Uncomment for HTTPS
+      # - ./certs:/certs
+      # Uncomment for custom whitelists
+      # - ./config:/config
+    depends_on:
+      - sonarr
+      - radarr
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - "8989:8989"
+    volumes:
+      - ./sonarr-data:/config
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - "7878:7878"
+    volumes:
+      - ./radarr-data:/config

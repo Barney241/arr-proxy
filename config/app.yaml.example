@@ -1,0 +1,20 @@
+# App configuration example
+# These settings are typically set via environment variables:
+#
+# Required:
+#   APP_TLS_CERT     - Path to TLS certificate
+#   APP_TLS_KEY      - Path to TLS private key
+#   APP_CA_CERT      - Path to CA certificate (for client verification)
+#
+# Optional:
+#   APP_PORT         - Server port (default: 8443)
+#   APP_AUTH_MODE    - Authentication mode: apikey, basic, or mtls (default: apikey)
+#   APP_API_KEY      - API key for apikey auth mode
+#   APP_BASIC_AUTH_USER - Username for basic auth mode
+#   APP_BASIC_AUTH_PASS - Password for basic auth mode
+#
+# Service API keys (override yaml config):
+#   SONARR_URL       - Sonarr instance URL
+#   SONARR_API_KEY   - Sonarr API key
+#   RADARR_URL       - Radarr instance URL
+#   RADARR_API_KEY   - Radarr API key

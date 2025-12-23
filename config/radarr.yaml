@@ -1,0 +1,22 @@
+# Radarr configuration
+# Set RADARR_URL environment variable to enable this service
+# Example: RADARR_URL=http://radarr:7878
+url: ""
+
+# API key for Radarr - set via RADARR_API_KEY environment variable
+api_key: ""
+
+# Whitelisted API endpoints (regex patterns)
+# Only these endpoints will be proxied, all others return 403
+whitelist:
+  # Core endpoints
+  - '^/api/v3/movie(?:/.*)?$'
+  - '^/api/v3/queue(?:/.*)?$'
+  - '^/api/v3/system/status$'
+  - '^/api/v3/tag(?:/.*)?$'
+  # Common read-only endpoints
+  - '^/api/v3/calendar(?:/.*)?$'
+  - '^/api/v3/wanted(?:/.*)?$'
+  - '^/api/v3/history(?:/.*)?$'
+  - '^/api/v3/collection(?:/.*)?$'
+  - '^/api/v3/parse(?:/.*)?$'
