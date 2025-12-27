@@ -1,5 +1,7 @@
 # Arr-Proxy
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A secure API gateway for Sonarr and Radarr. Enforces endpoint whitelists, injects API keys, and handles authentication.
 
 ## Quick Start
