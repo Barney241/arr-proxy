@@ -12,12 +12,31 @@ const (
 	AuthModeAPIKey = "apikey"
 )
 
+// WhitelistRule represents a single whitelist entry with optional method restrictions.
+// Format: "METHOD1,METHOD2:pattern" or just "pattern" (allows all methods)
+type WhitelistRule struct {
+	Methods map[string]bool // nil means all methods allowed
+	Pattern *regexp.Regexp
+}
+
+// Matches checks if the rule matches the given method and path.
+func (r *WhitelistRule) Matches(method, path string) bool {
+	if !r.Pattern.MatchString(path) {
+		return false
+	}
+	// If no methods specified, allow all
+	if r.Methods == nil {
+		return true
+	}
+	return r.Methods[method]
+}
+
 // ServiceConfig holds the configuration for a single service (like Sonarr or Radarr).
 type ServiceConfig struct {
 	URL               string   `yaml:"url" mapstructure:"url"`
 	APIKey            string   `yaml:"api_key" mapstructure:"api_key"`
 	Whitelist         []string `yaml:"whitelist" mapstructure:"whitelist"`
-	CompiledWhitelist []*regexp.Regexp
+	CompiledWhitelist []WhitelistRule
 	ParsedURL         *url.URL
 }
 
@@ -44,10 +63,10 @@ type Config struct {
 	Server  ServerConfig
 }
 
-// IsWhitelisted checks if a given path is whitelisted for the service.
-func (sc *ServiceConfig) IsWhitelisted(path string) bool {
-	for _, re := range sc.CompiledWhitelist {
-		if re.MatchString(path) {
+// IsWhitelisted checks if a given method and path combination is whitelisted for the service.
+func (sc *ServiceConfig) IsWhitelisted(method, path string) bool {
+	for _, rule := range sc.CompiledWhitelist {
+		if rule.Matches(method, path) {
 			return true
 		}
 	}

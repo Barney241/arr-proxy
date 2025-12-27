@@ -53,10 +53,26 @@ func TestProxyEndpoint(t *testing.T) {
 		body         string
 		expectedCode int
 	}{
+		// Basic whitelist tests
 		{"sonarr whitelisted", "sonarr", "/api/v3/system/status", "GET", "", http.StatusOK},
 		{"sonarr not whitelisted", "sonarr", "/api/v3/nonexistent", "GET", "", http.StatusForbidden},
 		{"radarr whitelisted", "radarr", "/api/v3/system/status", "GET", "", http.StatusOK},
 		{"radarr not whitelisted", "radarr", "/api/v3/nonexistent", "GET", "", http.StatusForbidden},
+
+		// Method restriction tests - GET only endpoint
+		{"readonly GET allowed", "sonarr", "/api/v3/readonly", "GET", "", http.StatusOK},
+		{"readonly POST blocked", "sonarr", "/api/v3/readonly", "POST", "", http.StatusForbidden},
+		{"readonly DELETE blocked", "sonarr", "/api/v3/readonly", "DELETE", "", http.StatusForbidden},
+
+		// Method restriction tests - DELETE only endpoint
+		{"deleteonly DELETE allowed", "sonarr", "/api/v3/deleteonly", "DELETE", "", http.StatusOK},
+		{"deleteonly GET blocked", "sonarr", "/api/v3/deleteonly", "GET", "", http.StatusForbidden},
+
+		// Method restriction tests - GET,POST endpoint (movie)
+		{"movie GET allowed", "radarr", "/api/v3/movie", "GET", "", http.StatusOK},
+		{"movie POST allowed", "radarr", "/api/v3/movie", "POST", "", http.StatusOK},
+		{"movie DELETE blocked", "radarr", "/api/v3/movie", "DELETE", "", http.StatusForbidden},
+		{"movie PUT blocked", "radarr", "/api/v3/movie", "PUT", "", http.StatusForbidden},
 	}
 
 	for _, tc := range testCases {
@@ -69,9 +85,10 @@ func TestProxyEndpoint(t *testing.T) {
 			require.NoError(t, err)
 			defer resp.Body.Close()
 
-			assert.Equal(t, tc.expectedCode, resp.StatusCode)
+			assert.Equal(t, tc.expectedCode, resp.StatusCode, "Expected %d for %s %s", tc.expectedCode, tc.method, tc.path)
 
-			if tc.expectedCode == http.StatusOK {
+			// Only check response body for known backend endpoints
+			if tc.expectedCode == http.StatusOK && tc.path == "/api/v3/system/status" {
 				var result map[string]interface{}
 				err = json.NewDecoder(resp.Body).Decode(&result)
 				assert.NoError(t, err, "Response body should be valid JSON")

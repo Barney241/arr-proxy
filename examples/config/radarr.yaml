@@ -1,0 +1,20 @@
+# Radarr service configuration
+# URL and API key can be overridden via RADARR_URL and RADARR_API_KEY env vars
+
+url: "http://radarr:7878"
+api_key: "YOUR_RADARR_API_KEY"
+
+# Whitelist patterns (regex) - requests not matching are blocked
+# Format: 'pattern' (all methods) or 'METHOD:pattern' or 'METHOD1,METHOD2:pattern'
+whitelist:
+  # Read and add movies, but no delete
+  - 'GET,POST:^/api/v3/movie(?:/.*)?$'
+
+  # View and manage queue
+  - 'GET,POST:^/api/v3/queue(?:/.*)?$'
+
+  # System status
+  - '^/api/v3/system/status$'
+
+  # Tags (full access)
+  - '^/api/v3/tag(?:/.*)?$'

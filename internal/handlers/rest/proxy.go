@@ -71,8 +71,8 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !serviceConfig.IsWhitelisted(r.URL.Path) {
-		slog.Warn("Request blocked", "method", r.Method, "path", r.URL.Path, "client_cn", clientCN, "reason", "endpoint not whitelisted", "status", 403)
+	if !serviceConfig.IsWhitelisted(r.Method, r.URL.Path) {
+		slog.Warn("Request blocked", "method", r.Method, "path", r.URL.Path, "client_cn", clientCN, "reason", "method/endpoint not whitelisted", "status", 403)
 		http.Error(w, "403 Forbidden", http.StatusForbidden)
 		return
 	}

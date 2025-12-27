@@ -1,0 +1,23 @@
+# Sonarr service configuration
+# URL and API key can be overridden via SONARR_URL and SONARR_API_KEY env vars
+
+url: "http://sonarr:8989"
+api_key: "YOUR_SONARR_API_KEY"
+
+# Whitelist patterns (regex) - requests not matching are blocked
+# Format: 'pattern' (all methods) or 'METHOD:pattern' or 'METHOD1,METHOD2:pattern'
+whitelist:
+  # Read-only access to series
+  - 'GET:^/api/v3/series(?:/.*)?$'
+
+  # Read-only access to episodes
+  - 'GET:^/api/v3/episode(?:/.*)?$'
+
+  # View queue (no modifications)
+  - 'GET:^/api/v3/queue(?:/.*)?$'
+
+  # System status (all methods - backwards compatible)
+  - '^/api/v3/system/status$'
+
+  # Tags (read-only)
+  - 'GET:^/api/v3/tag(?:/.*)?$'

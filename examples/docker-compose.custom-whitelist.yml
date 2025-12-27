@@ -1,0 +1,19 @@
+# Example with custom whitelist configuration
+# Mount your own config files to override default whitelists
+
+services:
+  proxy:
+    image: barney241/arr-proxy:latest
+    ports:
+      - "8443:8443"
+    environment:
+      - APP_API_KEY=my-secure-proxy-key
+      - APP_TLS_CERT=/certs/server.crt
+      - APP_TLS_KEY=/certs/server.key
+      - APP_CA_CERT=/certs/ca.crt
+      # URLs/keys can still be set via env vars
+      - RADARR_URL=http://radarr:7878
+      - RADARR_API_KEY=your-radarr-api-key
+    volumes:
+      - ./certs:/certs
+      - ./config:/config  # Custom sonarr.yaml and radarr.yaml

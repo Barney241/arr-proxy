@@ -12,17 +12,55 @@ import (
 	"github.com/spf13/viper"
 )
 
-func compileWhitelist(patterns []string) []*regexp.Regexp {
-	compiled := make([]*regexp.Regexp, 0, len(patterns))
+// compileWhitelist parses whitelist patterns into WhitelistRules.
+// Supported formats:
+//   - "^/api/v3/path$"           -> all methods allowed
+//   - "GET:^/api/v3/path$"       -> only GET allowed
+//   - "GET,POST:^/api/v3/path$"  -> GET and POST allowed
+func compileWhitelist(patterns []string) []WhitelistRule {
+	compiled := make([]WhitelistRule, 0, len(patterns))
 	for _, p := range patterns {
+		rule := WhitelistRule{}
+
+		// Check if pattern has method prefix (e.g., "GET,POST:^/path$")
+		if idx := strings.Index(p, ":"); idx > 0 {
+			methodPart := p[:idx]
+			patternPart := p[idx+1:]
+
+			// Validate that method part looks like methods (uppercase, comma-separated)
+			if isValidMethodSpec(methodPart) {
+				rule.Methods = make(map[string]bool)
+				for _, m := range strings.Split(methodPart, ",") {
+					rule.Methods[strings.TrimSpace(m)] = true
+				}
+				p = patternPart
+			}
+			// Otherwise treat entire string as pattern (could be regex with :)
+		}
+
 		re, err := regexp.Compile(p)
 		if err != nil {
 			slog.Warn("Failed to compile whitelist regex, skipping", "pattern", p, "error", err)
 			continue
 		}
-		compiled = append(compiled, re)
+		rule.Pattern = re
+		compiled = append(compiled, rule)
 	}
 	return compiled
+}
+
+// isValidMethodSpec checks if a string looks like HTTP method(s)
+func isValidMethodSpec(s string) bool {
+	validMethods := map[string]bool{
+		"GET": true, "POST": true, "PUT": true, "PATCH": true,
+		"DELETE": true, "HEAD": true, "OPTIONS": true,
+	}
+	for _, m := range strings.Split(s, ",") {
+		if !validMethods[strings.TrimSpace(m)] {
+			return false
+		}
+	}
+	return true
 }
 
 // Load loads the entire application configuration.

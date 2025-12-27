@@ -219,10 +219,15 @@ func writeConfigFile(configDir, fileName, url, apiKey string) error {
 	content := fmt.Sprintf(`url: "%s"
 api_key: "%s"
 whitelist:
+  # All methods allowed
   - '^/api/v3/system/status$'
-  - '^/api/v3/series(?:/.*)?$'
-  - '^/api/v3/movie(?:/.*)?$'
-  - '^/api/v3/queue$'
+  # Method-restricted endpoints
+  - 'GET:^/api/v3/series(?:/.*)?$'
+  - 'GET,POST:^/api/v3/movie(?:/.*)?$'
+  - 'GET:^/api/v3/queue$'
+  # For testing method restrictions
+  - 'GET:^/api/v3/readonly$'
+  - 'DELETE:^/api/v3/deleteonly$'
 `, url, apiKey)
 	return os.WriteFile(filepath.Join(configDir, fileName), []byte(content), 0644)
 }

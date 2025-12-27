@@ -1,0 +1,17 @@
+# mTLS example - Maximum security with client certificates
+# Generate certificates first: see docs/certificates.md
+
+services:
+  proxy:
+    image: barney241/arr-proxy:latest
+    ports:
+      - "8443:8443"
+    environment:
+      - APP_AUTH_MODE=mtls
+      - APP_TLS_CERT=/certs/server.crt
+      - APP_TLS_KEY=/certs/server.key
+      - APP_CA_CERT=/certs/ca.crt
+      - RADARR_URL=http://radarr:7878
+      - RADARR_API_KEY=your-radarr-api-key
+    volumes:
+      - ./certs:/certs
